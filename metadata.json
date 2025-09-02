@@ -1,0 +1,7 @@
+{
+  "name": "Tabdeel Pulse",
+  "description": "A comprehensive business management application for tracking finances, service jobs, team communication, and administrative tasks. Providing at-a-glance KPIs, financial overviews, and streamlined workflows.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
