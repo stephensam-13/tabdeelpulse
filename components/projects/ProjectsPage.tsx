@@ -119,13 +119,15 @@ const ProjectsPage: React.FC = () => {
                   </div>
                   <StatusBadge status={proj.status} />
               </div>
-              <div className="mt-2">
-                <div className="text-xs text-gray-500">Client</div>
-                <div className="text-sm text-gray-900 dark:text-gray-300">{proj.client}</div>
-              </div>
-              <div className="mt-4 flex justify-end space-x-4">
-                {hasPermission('projects:update') && <button onClick={() => { setSelectedProject(proj); setEditModalOpen(true); }} className="text-primary hover:text-primary/80"><PencilIcon className="h-5 w-5"/></button>}
-                {hasPermission('projects:delete') && <button onClick={() => { setSelectedProject(proj); setDeleteModalOpen(true); }} className="text-red-600 hover:text-red-900 dark:text-red-500 dark:hover:text-red-400"><TrashIcon className="h-5 w-5"/></button>}
+              <div className="mt-4 flex justify-between items-center">
+                <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Client</div>
+                    <div className="text-sm text-gray-900 dark:text-gray-300">{proj.client}</div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  {hasPermission('projects:update') && <button onClick={() => { setSelectedProject(proj); setEditModalOpen(true); }} className="text-primary hover:text-primary/80"><PencilIcon className="h-5 w-5"/></button>}
+                  {hasPermission('projects:delete') && <button onClick={() => { setSelectedProject(proj); setDeleteModalOpen(true); }} className="text-red-600 hover:text-red-900 dark:text-red-500 dark:hover:text-red-400"><TrashIcon className="h-5 w-5"/></button>}
+                </div>
               </div>
             </div>
           ))}
