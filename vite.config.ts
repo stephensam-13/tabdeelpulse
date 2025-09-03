@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
     plugins: [react()],
-    base: '/tabdeelpulse/', // 👈 Replace with your repo name
+    base: '/tabdeelpulse/', // 👈 Replace with your repo name if deploying to GitHub Pages
     define: {
       'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
