@@ -1,0 +1,216 @@
+
+import React, { useState, useRef, FormEvent } from 'react';
+import type { User } from '../../types';
+import { CameraIcon } from '../icons/Icons';
+
+interface UserProfilePageProps {
+    user: User;
+}
+
+const UserProfilePage: React.FC<UserProfilePageProps> = ({ user }) => {
+    const [name, setName] = useState(user.name);
+    const [mobile, setMobile] = useState(user.mobile || '');
+    const [avatarPreview, setAvatarPreview] = useState(user.avatarUrl);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [infoSuccess, setInfoSuccess] = useState('');
+    const [infoErrors, setInfoErrors] = useState<{ name?: string; mobile?: string }>({});
+
+
+    // Password change state
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [passwordErrors, setPasswordErrors] = useState<{ current?: string; new?: string; confirm?: string; }>({});
+    const [passwordSuccess, setPasswordSuccess] = useState('');
+
+    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatarPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const validateInfo = () => {
+        const errors: { name?: string; mobile?: string } = {};
+        if (!name.trim()) {
+            errors.name = 'Full Name is required.';
+        }
+        if (mobile && !/^\+?[0-9\s-]{10,15}$/.test(mobile)) {
+            errors.mobile = 'Please enter a valid mobile number.';
+        }
+        setInfoErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handleInfoSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setInfoSuccess('');
+        if (!validateInfo()) return;
+
+        // Mock API call
+        console.log("Saving user info:", { name, mobile, avatar: avatarPreview });
+        setInfoSuccess("Profile information updated successfully!");
+        setTimeout(() => setInfoSuccess(''), 3000);
+    };
+    
+    const validatePassword = () => {
+        const errors: { current?: string; new?: string; confirm?: string; } = {};
+        if (!currentPassword) {
+            errors.current = 'Current password is required.';
+        }
+        if (!newPassword) {
+            errors.new = 'New password is required.';
+        } else if (newPassword.length < 8) {
+            errors.new = 'New password must be at least 8 characters long.';
+        }
+        if (!confirmNewPassword) {
+            errors.confirm = 'Please confirm your new password.';
+        } else if (newPassword !== confirmNewPassword) {
+            errors.confirm = 'New passwords do not match.';
+        }
+        setPasswordErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+
+    const handlePasswordSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setPasswordSuccess('');
+        if(!validatePassword()) return;
+
+        // Mock API call
+        console.log("Changing password...");
+        setPasswordSuccess("Password updated successfully!");
+        
+        // Clear fields
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmNewPassword('');
+        
+        setTimeout(() => setPasswordSuccess(''), 3000); // Clear success message after 3s
+    };
+
+    const FormRow: React.FC<{ label: string, children: React.ReactNode, error?: string }> = ({ label, children, error }) => (
+        <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:py-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 sm:mt-px sm:pt-2">
+                {label}
+            </label>
+            <div className="mt-1 sm:mt-0 sm:col-span-2">
+                {children}
+                {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
+            </div>
+        </div>
+    );
+
+    const TextInput: React.FC<React.InputHTMLAttributes<HTMLInputElement> & {hasError?: boolean}> = ({ hasError, ...props }) => (
+        <input
+            {...props}
+            className={`block w-full max-w-lg shadow-sm focus:ring-primary focus:border-primary sm:text-sm ${hasError ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+        />
+    );
+
+
+    return (
+        <div>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">User Profile</h1>
+
+            <div className="space-y-8">
+                {/* Personal Information Card */}
+                <div className="bg-white dark:bg-dark-card shadow-md rounded-lg">
+                    <form onSubmit={handleInfoSubmit} noValidate>
+                        <div className="px-4 py-5 sm:p-6">
+                            <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">Personal Information</h3>
+                            <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">Update your photo and personal details.</p>
+                            
+                             <div className="mt-6 divide-y divide-gray-200 dark:divide-gray-700">
+                                <FormRow label="Photo">
+                                    <div className="flex items-center">
+                                        <span className="h-24 w-24 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
+                                            {avatarPreview ? (
+                                              <img src={avatarPreview} alt="Avatar preview" className="h-full w-full object-cover" />
+                                            ) : (
+                                              <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                              </svg>
+                                            )}
+                                        </span>
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            onChange={handleAvatarChange}
+                                            className="hidden"
+                                            accept="image/*"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="ml-5 bg-white dark:bg-gray-700 py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                        >
+                                            <CameraIcon className="h-5 w-5 mr-2 inline-block" />
+                                            Change
+                                        </button>
+                                    </div>
+                                </FormRow>
+                                <FormRow label="Full Name" error={infoErrors.name}>
+                                    <TextInput type="text" value={name} onChange={(e) => setName(e.target.value)} required hasError={!!infoErrors.name} />
+                                </FormRow>
+                                 <FormRow label="Email Address">
+                                    <TextInput type="email" value={user.email} disabled className="disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500" />
+                                </FormRow>
+                                <FormRow label="Mobile Number" error={infoErrors.mobile}>
+                                    <TextInput type="tel" value={mobile} onChange={(e) => setMobile(e.target.value)} placeholder="+971 50 123 4567" hasError={!!infoErrors.mobile} />
+                                </FormRow>
+                            </div>
+                            {infoSuccess && <p className="mt-4 text-sm text-green-600 dark:text-green-400">{infoSuccess}</p>}
+                        </div>
+                        <div className="px-4 py-3 bg-gray-50 dark:bg-dark-card/50 text-right sm:px-6 rounded-b-lg">
+                            <button
+                                type="submit"
+                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {/* Change Password Card */}
+                <div className="bg-white dark:bg-dark-card shadow-md rounded-lg">
+                    <form onSubmit={handlePasswordSubmit} noValidate>
+                        <div className="px-4 py-5 sm:p-6">
+                            <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">Change Password</h3>
+                             <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">Ensure your account is using a long, random password to stay secure.</p>
+                            
+                            <div className="mt-6 divide-y divide-gray-200 dark:divide-gray-700">
+                                <FormRow label="Current Password" error={passwordErrors.current}>
+                                    <TextInput type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required autoComplete="current-password" hasError={!!passwordErrors.current} />
+                                </FormRow>
+                                <FormRow label="New Password" error={passwordErrors.new}>
+                                    <TextInput type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required autoComplete="new-password" hasError={!!passwordErrors.new} />
+                                </FormRow>
+                                <FormRow label="Confirm New Password" error={passwordErrors.confirm}>
+                                    <TextInput type="password" value={confirmNewPassword} onChange={e => setConfirmNewPassword(e.target.value)} required autoComplete="new-password" hasError={!!passwordErrors.confirm} />
+                                </FormRow>
+                            </div>
+                             {passwordSuccess && <p className="mt-4 text-sm text-green-600 dark:text-green-400">{passwordSuccess}</p>}
+                        </div>
+                        <div className="px-4 py-3 bg-gray-50 dark:bg-dark-card/50 text-right sm:px-6 rounded-b-lg">
+                            <button
+                                type="submit"
+                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                            >
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default UserProfilePage;
