@@ -4,16 +4,10 @@ import { PlusIcon, ClockIcon, CheckCircleIcon, XCircleIcon, DocumentDuplicateIco
 import NewPaymentInstructionModal from './NewPaymentInstructionModal';
 import { useAuth } from '../../hooks/useAuth';
 import TransactionDetailsModal from './TransactionDetailsModal';
+import { mockInstructions } from '../../data/mockData';
 
 type SortDirection = 'ascending' | 'descending';
 type SortableKeys = 'dueDate' | 'amount';
-
-const mockInstructions: PaymentInstruction[] = [
-  { id: 'PI-00124', payee: 'Etisalat', amount: 15500.00, currency: 'AED', dueDate: '2024-07-25', status: 'Pending', isRecurring: true, nextDueDate: '2024-08-25', balance: 186000, submittedBy: 'Shiraj', history: [{ status: 'Pending', user: 'Shiraj', timestamp: '2024-07-22 10:00' }] },
-  { id: 'PI-00123', payee: 'Bosch Security Systems', amount: 42500.75, currency: 'AED', dueDate: '2024-07-20', status: 'Approved', isRecurring: false, submittedBy: 'Elwin', history: [{ status: 'Pending', user: 'Elwin', timestamp: '2024-07-18 14:30' }, { status: 'Approved', user: 'Suhair Mahmoud', timestamp: '2024-07-19 09:15' }] },
-  { id: 'PI-00122', payee: 'Hikvision Middle East', amount: 13200.00, currency: 'AED', dueDate: '2024-07-19', status: 'Rejected', isRecurring: false, submittedBy: 'Peesto', history: [{ status: 'Pending', user: 'Peesto', timestamp: '2024-07-18 11:00' }, { status: 'Rejected', user: 'Suhair Mahmoud', timestamp: '2024-07-18 16:45', remarks: 'PO number mismatch' }] },
-  { id: 'PI-00121', payee: 'DEWA', amount: 2850.50, currency: 'AED', dueDate: '2024-07-15', status: 'Approved', isRecurring: true, nextDueDate: '2024-08-15', balance: 34206.00, submittedBy: 'Shiraj', history: [{ status: 'Pending', user: 'Shiraj', timestamp: '2024-07-13 09:00' }, { status: 'Approved', user: 'Suhair Mahmoud', timestamp: '2024-07-14 11:20' }] },
-];
 
 const PaymentInstructionsTab: React.FC = () => {
     const [instructions, setInstructions] = useState<PaymentInstruction[]>(mockInstructions);

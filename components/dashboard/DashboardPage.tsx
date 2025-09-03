@@ -1,35 +1,51 @@
-
 import React from 'react';
 import KpiCard from './KpiCard';
 import FinancialChart from './FinancialChart';
 import ActivityFeed from './ActivityFeed';
 import type { Kpi, FinancialDataPoint, ActivityItem } from '../../types';
+import { mockInstructions, mockServiceJobs, mockThreads, mockCollections } from '../../data/mockData';
 
-const DashboardPage: React.FC = () => {
+interface DashboardPageProps {
+  onNavigate: (pageId: string) => void;
+}
+
+const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
+    // Calculate KPIs dynamically
+    const totalCollections = mockCollections.reduce((sum, c) => sum + c.amount, 0);
+    const pendingApprovals = mockInstructions.filter(i => i.status === 'Pending');
+    const pendingApprovalsCount = pendingApprovals.length;
+    const pendingApprovalsValue = pendingApprovals.reduce((sum, i) => sum + i.amount, 0);
+    const activeJobsCount = mockServiceJobs.filter(j => j.status === 'In Progress' || j.status === 'Assigned').length;
+    const unreadMessagesCount = mockThreads.reduce((sum, t) => sum + t.unreadCount, 0);
+
     const kpiData: Kpi[] = [
         {
-            title: 'Total Revenue',
-            value: 'AED 405,091.00',
+            title: 'Total Collections',
+            value: `AED ${totalCollections.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
             change: '+4.5%',
             changeType: 'increase',
+            link: 'finance',
         },
         {
             title: 'Pending Approvals',
-            value: '12 (AED 15,230)',
+            value: `${pendingApprovalsCount} (AED ${pendingApprovalsValue.toLocaleString()})`,
             change: '+2.1%',
             changeType: 'increase',
+            link: 'finance',
         },
         {
             title: 'Active Service Jobs',
-            value: '28',
+            value: String(activeJobsCount),
             change: '-1.8%',
             changeType: 'decrease',
+            link: 'service-jobs',
         },
         {
             title: 'Unread Messages',
-            value: '4',
+            value: String(unreadMessagesCount),
             change: '+1',
             changeType: 'increase',
+            link: 'messages',
         },
     ];
 
@@ -59,7 +75,7 @@ const DashboardPage: React.FC = () => {
         
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            {kpiData.map((kpi, index) => <KpiCard key={index} kpi={kpi} />)}
+            {kpiData.map((kpi, index) => <KpiCard key={index} kpi={kpi} onClick={() => kpi.link && onNavigate(kpi.link)} />)}
         </div>
 
         {/* Main Content Area */}

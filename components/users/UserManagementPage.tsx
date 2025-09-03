@@ -7,27 +7,13 @@ import DeleteConfirmationModal from './DeleteConfirmationModal';
 import ConfirmationModal from './ConfirmationModal';
 import { useAuth } from '../../hooks/useAuth';
 
-const mockUsers: User[] = [
-  { id: 1, name: 'Mohammed Semeem', email: 'semeem@tabdeel.io', roleId: 'Administrator', role: 'Administrator', status: 'Active', avatarUrl: 'https://picsum.photos/seed/semeem/40/40', permissions:[], financialLimit: 0 },
-  { id: 11, name: 'Sabu', email: 'mail@jsabu.com', roleId: 'Administrator', role: 'Administrator', status: 'Active', avatarUrl: 'https://picsum.photos/seed/sabu/40/40', permissions:[], financialLimit: 0 },
-  { id: 2, name: 'Suhair Mahmoud', email: 'suhair@tabdeel.io', roleId: 'Manager', role: 'Manager', status: 'Active', avatarUrl: 'https://picsum.photos/seed/suhair/40/40', permissions:[], financialLimit: 0 },
-  { id: 3, name: 'Sreejith', email: 'sreejith@tabdeel.io', roleId: 'Manager', role: 'Manager', status: 'Active', avatarUrl: 'https://picsum.photos/seed/sreejith/40/40', permissions:[], financialLimit: 0 },
-  { id: 4, name: 'Shiraj', email: 'shiraj@tabdeel.io', roleId: 'Finance', role: 'Finance', status: 'Active', avatarUrl: 'https://picsum.photos/seed/shiraj/40/40', permissions:[], financialLimit: 0 },
-  { id: 5, name: 'Suju', email: 'suju@tabdeel.io', roleId: 'Manager', role: 'Manager', status: 'Active', avatarUrl: 'https://picsum.photos/seed/suju/40/40', permissions:[], financialLimit: 0 },
-  { id: 6, name: 'NOUMAN', email: 'nouman@tabdeel.io', roleId: 'Technician', role: 'Technician', status: 'Active', avatarUrl: 'https://picsum.photos/seed/nouman/40/40', permissions:[], financialLimit: 0 },
-  { id: 7, name: 'Benhur', email: 'benhur@tabdeel.io', roleId: 'Technician', role: 'Technician', status: 'Active', avatarUrl: 'https://picsum.photos/seed/benhur/40/40', permissions:[], financialLimit: 0 },
-  { id: 8, name: 'Nakul', email: 'nakul@tabdeel.io', roleId: 'Technician', role: 'Technician', status: 'Disabled', avatarUrl: 'https://picsum.photos/seed/nakul/40/40', permissions:[], financialLimit: 0 },
-  { id: 9, name: 'Elwin', email: 'elwin@tabdeel.io', roleId: 'Finance', role: 'Finance', status: 'Active', avatarUrl: 'https://picsum.photos/seed/elwin/40/40', permissions:[], financialLimit: 0 },
-  { id: 10, name: 'Peesto', email: 'peesto@tabdeel.io', roleId: 'Finance', role: 'Finance', status: 'Active', avatarUrl: 'https://picsum.photos/seed/peesto/40/40', permissions:[], financialLimit: 0 },
-];
 
 interface UserManagementPageProps {
   roles: Role[];
 }
 
 const UserManagementPage: React.FC<UserManagementPageProps> = ({ roles }) => {
-  const [users, setUsers] = useState<User[]>(mockUsers);
-  const { user: currentUser, hasPermission } = useAuth();
+  const { allUsers, addUser, updateUser, deleteUser, user: currentUser, hasPermission } = useAuth();
   
   // Modal states
   const [isAddModalOpen, setAddModalOpen] = useState(false);
@@ -51,26 +37,22 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ roles }) => {
       id: Date.now(), // simple unique ID for mock
       avatarUrl: `https://picsum.photos/seed/user${Date.now()}/40/40`,
       role: role?.name || newUserData.roleId,
-      permissions: role?.permissions || [],
-      financialLimit: 50000, // Default limit
+      permissions: [], // Permissions will be added by the auth context
+      financialLimit: 0, // Financial limit will be set by the auth context
     };
-    setUsers(prevUsers => [newUser, ...prevUsers]);
+    addUser(newUser as User);
     setAddModalOpen(false);
   };
 
   const handleUpdateUser = (updatedUser: User) => {
-    setUsers(users.map(user => user.id === updatedUser.id ? updatedUser : user));
+    updateUser(updatedUser);
     setEditModalOpen(false);
     setEditingUser(null);
   }
 
   const handleConfirmToggleStatus = () => {
     if (statusChangeUser) {
-        setUsers(users.map(user => 
-          user.id === statusChangeUser.id 
-            ? { ...user, status: user.status === 'Active' ? 'Disabled' : 'Active' } 
-            : user
-        ));
+        updateUser({ ...statusChangeUser, status: statusChangeUser.status === 'Active' ? 'Disabled' : 'Active' });
     }
     setConfirmStatusModalOpen(false);
     setStatusChangeUser(null);
@@ -78,7 +60,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ roles }) => {
   
   const handleConfirmDelete = () => {
     if (deletingUser) {
-      setUsers(users.filter(user => user.id !== deletingUser.id));
+      deleteUser(deletingUser.id);
       setDeleteModalOpen(false);
       setDeletingUser(null);
     }
@@ -216,7 +198,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ roles }) => {
                     </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-dark-card divide-y divide-gray-200 dark:divide-gray-700">
-                    {users.map((user) => (
+                    {allUsers.map((user) => (
                         <tr key={user.id}>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
@@ -250,7 +232,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ roles }) => {
 
         {/* Mobile Card View */}
         <div className="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
-            {users.map(user => (
+            {allUsers.map(user => (
                 <div key={user.id} className="p-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
