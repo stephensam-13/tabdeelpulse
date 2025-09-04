@@ -43,6 +43,7 @@ export interface Kpi {
   value: string;
   change: string;
   changeType: 'increase' | 'decrease';
+  link?: string;
 }
 
 export interface FinancialDataPoint {
@@ -76,6 +77,7 @@ export interface Notification {
   timestamp: string;
   read: boolean;
   icon: React.ElementType;
+  link: string;
 }
 
 
@@ -176,6 +178,14 @@ export interface AccountHead {
     bankName: string;
     accountNumber: string;
     status: AccountHeadStatus;
+}
+
+// Task Management Types
+export interface Task {
+  id: string;
+  description: string;
+  deadline: string; // YYYY-MM-DD
+  isCompleted: boolean;
 }
 
 export const mockUsersList: { name: string; avatarUrl: string, id: number }[] = [

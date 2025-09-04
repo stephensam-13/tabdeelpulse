@@ -1,44 +1,83 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import type { User, Permission } from '../types';
 import { initialRoles } from '../components/roles/RoleManagementPage';
+import { MOCK_USERS } from '../data/mockData';
 
 interface AuthContextType {
   user: User | null;
+  originalUser: User | null;
+  allUsers: User[];
+  switchUser: (userId: number) => void;
   hasPermission: (permission: Permission) => boolean;
+  addUser: (newUser: User) => void;
+  updateUser: (updatedUser: User) => void;
+  deleteUser: (userId: number) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// A mock user for demonstration. In a real app, this would come from an API.
-const adminRole = initialRoles.find(r => r.id === 'Administrator');
-const mockCurrentUser: User = {
-  id: 1,
-  name: 'Mohammed Semeem',
-  email: 'semeem@tabdeel.io',
-  mobile: '+971 50 111 2222',
-  avatarUrl: 'https://picsum.photos/seed/semeem/100/100',
-  roleId: 'Administrator',
-  role: 'Administrator',
-  status: 'Active',
-  permissions: adminRole?.permissions || [],
-  financialLimit: 100000, // Admins have a high limit
+const enhanceUser = (user: User, roles: typeof initialRoles): User => {
+    const role = roles.find(r => r.id === user.roleId);
+    return {
+        ...user,
+        permissions: role ? role.permissions : [],
+        financialLimit: role?.id === 'Administrator' ? 100000 : (role?.id === 'Manager' ? 50000 : 0),
+    };
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const user = mockCurrentUser; // Using the mock user directly
+  const [allUsers, setAllUsers] = useState<User[]>(() => MOCK_USERS.map(u => enhanceUser(u, initialRoles)));
+  
+  // FIX: Rename `originalAdminUser` to `originalUser` to align with the context value.
+  const originalUser = useMemo(() => allUsers.find(u => u.id === 1) || null, [allUsers]);
 
-  const hasPermission = (permission: Permission): boolean => {
-    if (!user) return false;
-    // System admins have all permissions implicitly
-    if (user.permissions.includes('system:admin')) {
-      return true;
-    }
-    return user.permissions.includes(permission);
+  const [activeUser, setActiveUser] = useState<User | null>(originalUser);
+
+  const switchUser = useCallback((userId: number) => {
+    const userToSwitchTo = allUsers.find(u => u.id === userId);
+    setActiveUser(userToSwitchTo || null);
+  }, [allUsers]);
+  
+  const addUser = (newUser: Omit<User, 'permissions' | 'financialLimit'>) => {
+      const enhancedNewUser = enhanceUser(newUser as User, initialRoles);
+      setAllUsers(prevUsers => [enhancedNewUser, ...prevUsers]);
+  };
+  
+  const updateUser = (updatedUser: User) => {
+      setAllUsers(users => users.map(user => user.id === updatedUser.id ? updatedUser : user));
+      if (activeUser?.id === updatedUser.id) {
+          setActiveUser(updatedUser);
+      }
   };
 
-  const value = { user, hasPermission };
+  const deleteUser = (userId: number) => {
+      if (activeUser?.id === userId) {
+        if(originalUser) {
+            switchUser(originalUser.id);
+        }
+      }
+      setAllUsers(users => users.filter(user => user.id !== userId));
+  };
 
-  // FIX: Replaced JSX with React.createElement to be valid in a .ts file.
+  const hasPermission = useMemo(() => (permission: Permission): boolean => {
+    if (!activeUser) return false;
+    if (activeUser.permissions.includes('system:admin')) {
+      return true;
+    }
+    return activeUser.permissions.includes(permission);
+  }, [activeUser]);
+
+  const value = { 
+      user: activeUser, 
+      originalUser,
+      allUsers,
+      switchUser,
+      hasPermission,
+      addUser,
+      updateUser,
+      deleteUser
+  };
+
   return React.createElement(AuthContext.Provider, { value }, children);
 };
 

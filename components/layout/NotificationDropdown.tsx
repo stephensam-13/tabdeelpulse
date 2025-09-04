@@ -4,9 +4,10 @@ import { Notification } from '../../types';
 interface NotificationDropdownProps {
   notifications: Notification[];
   onMarkAllRead: () => void;
+  onNotificationClick: (notification: Notification) => void;
 }
 
-const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ notifications, onMarkAllRead }) => {
+const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ notifications, onMarkAllRead, onNotificationClick }) => {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
@@ -26,8 +27,11 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ notificatio
       </div>
       <ul className="max-h-80 overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
         {notifications.map(notification => (
-          <li key={notification.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-            <a href="#" className="flex items-start space-x-4">
+          <li key={notification.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <button
+              onClick={() => onNotificationClick(notification)}
+              className="w-full text-left p-4 flex items-start space-x-4"
+            >
               <div className="relative flex-shrink-0">
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <notification.icon className="h-5 w-5 text-primary" />
@@ -39,7 +43,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ notificatio
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{notification.description}</p>
                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">{notification.timestamp}</p>
               </div>
-            </a>
+            </button>
           </li>
         ))}
       </ul>

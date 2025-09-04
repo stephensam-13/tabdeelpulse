@@ -1,23 +1,13 @@
-
-
 import React, { useState } from 'react';
 import { ServiceJob, JobStatus } from '../../types';
 import KanbanBoard from './KanbanBoard';
 import JobDetailsModal from './JobDetailsModal';
 import CreateJobModal from './CreateJobModal';
 import { PlusIcon } from '../icons/Icons';
-
-const initialJobs: ServiceJob[] = [
-    { id: 'SJ-9812', title: 'Install new Wi-Fi APs in Block C', project: 'Al Quoz Labour Camp Internet', technician: { name: 'NOUMAN', avatarUrl: 'https://picsum.photos/seed/nouman/40/40' }, status: 'Completed', priority: 'High' },
-    { id: 'SJ-9813', title: 'Troubleshoot low connectivity in East Wing', project: 'Jebel Ali Labour Village Connectivity', technician: { name: 'Benhur', avatarUrl: 'https://picsum.photos/seed/benhur/40/40' }, status: 'In Progress', priority: 'High' },
-    { id: 'SJ-9814', title: 'Configure Access Control System', project: 'ICD Brookfield Place Security System Upgrade', technician: { name: 'NOUMAN', avatarUrl: 'https://picsum.photos/seed/nouman/40/40' }, status: 'In Progress', priority: 'Medium' },
-    { id: 'SJ-9815', title: 'Install CCTV cameras on 5th floor', project: 'City Walk Building 7 BMS', technician: { name: 'Benhur', avatarUrl: 'https://picsum.photos/seed/benhur/40/40' }, status: 'Assigned', priority: 'Medium' },
-    { id: 'SJ-9816', title: 'Set up bandwidth management portal', project: 'Al Quoz Labour Camp Internet', technician: { name: 'Nakul', avatarUrl: 'https://picsum.photos/seed/nakul/40/40' }, status: 'Assigned', priority: 'Low' },
-    { id: 'SJ-9817', title: 'Integrate fire alarm with BMS', project: 'City Walk Building 7 BMS', technician: { name: 'Benhur', avatarUrl: 'https://picsum.photos/seed/benhur/40/40' }, status: 'Resolved', priority: 'High' },
-];
+import { mockServiceJobs } from '../../data/mockData';
 
 const ServiceJobsPage: React.FC = () => {
-    const [jobs, setJobs] = useState<ServiceJob[]>(initialJobs);
+    const [jobs, setJobs] = useState<ServiceJob[]>(mockServiceJobs);
     const [selectedJob, setSelectedJob] = useState<ServiceJob | null>(null);
     const [isCreateModalOpen, setCreateModalOpen] = useState(false);
 

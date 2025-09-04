@@ -2,15 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { Collection } from '../../types';
 import { PlusIcon, ArrowDownTrayIcon, ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '../icons/Icons';
 import LogCollectionModal from './LogCollectionModal';
+import { mockCollections } from '../../data/mockData';
 
 type SortDirection = 'ascending' | 'descending';
 type SortableKeys = 'date' | 'amount';
-
-const mockCollections: Collection[] = [
-  { id: 'C-201', project: 'Al Quoz Labour Camp Internet', payer: 'Al Naboodah Construction', amount: 50000, type: 'Cheque', date: '2024-07-22', status: 'Deposited', outstandingAmount: 150000 },
-  { id: 'C-202', project: 'ICD Brookfield Place Security System Upgrade', payer: 'ICD Brookfield', amount: 125000, type: 'Cheque', date: '2024-07-21', status: 'Deposited', outstandingAmount: 0 },
-  { id: 'C-203', project: 'Jebel Ali Labour Village Connectivity', payer: 'DP World', amount: 75000, type: 'Cash', date: '2024-07-22', status: 'Collected', outstandingAmount: 75000 },
-];
 
 const CollectionsTab: React.FC = () => {
   const [collections, setCollections] = useState<Collection[]>(mockCollections);

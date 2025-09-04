@@ -2,14 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { Deposit } from '../../types';
 import { PlusIcon, ArrowDownTrayIcon, ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '../icons/Icons';
 import LogDepositModal from './LogDepositModal';
+import { mockDeposits } from '../../data/mockData';
 
 type SortDirection = 'ascending' | 'descending';
 type SortableKeys = 'date' | 'amount';
-
-const mockDeposits: Deposit[] = [
-  { id: 'D-101', accountHead: 'Main Operations', amount: 17500.00, date: '2024-07-22', status: 'Confirmed' },
-  { id: 'D-102', accountHead: 'Project Alpha Payouts', amount: 7500.00, date: '2024-07-22', status: 'Pending' },
-];
 
 const DepositsTab: React.FC = () => {
   const [deposits, setDeposits] = useState<Deposit[]>(mockDeposits);

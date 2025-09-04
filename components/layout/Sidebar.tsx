@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   PulseIcon,
+  ClipboardDocumentCheckIcon,
 } from '../icons/Icons';
 import type { NavLink } from '../../types';
 
@@ -17,6 +18,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, onNavigate, isOpen, setOp
     { id: 'finance', href: '#', label: 'Finance' },
     { id: 'service-jobs', href: '#', label: 'Service Jobs' },
     { id: 'messages', href: '#', label: 'Messages' },
+  ];
+
+  const tasksNav: NavLink[] = [
+      { id: 'tasks', href: '#', label: 'Tasks' },
   ];
 
   const accountNav: NavLink[] = [
@@ -72,6 +77,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, onNavigate, isOpen, setOp
               <NavItem key={link.id} link={link} isActive={activePage === link.id} onClick={() => onNavigate(link.id)} />
             ))}
           </ul>
+          <div className="mt-8">
+              <h3 className="px-3 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Tasks</h3>
+              <ul className="mt-2">
+                  {tasksNav.map(link => (
+                      <NavItem key={link.id} link={link} isActive={activePage === link.id} onClick={() => onNavigate(link.id)} />
+                  ))}
+              </ul>
+          </div>
           <div className="mt-8">
               <h3 className="px-3 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Account</h3>
               <ul className="mt-2">
